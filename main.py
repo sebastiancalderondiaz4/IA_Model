@@ -15,9 +15,9 @@ output_details = interpreter.get_output_details()
 
 
 map_categories = {
-    "aprovechable" : ['cardboard', 'paper', 'plastic'],
-    "inorganica" : ['trash', 'white-glass'],
-    "organicos" : ['biological']
+    "APROVECHABLES" : ['cardboard', 'paper', 'plastic'],
+    "NO_APROVECHABLE" : ['trash', 'white-glass'],
+    "ORGANICOS" : ['biological']
 }
 
 def predecir_imagen(imagen_path, modelo):
