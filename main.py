@@ -1,9 +1,18 @@
 import os
 import cv2
 import numpy as np
-from tensorflow.keras.models import load_model
+#from tensorflow.keras.models import load_model
+import tflite_runtime.interpreter  as tfi
 
-model_path = './modelo_mobilenetv2_entrenado.keras'
+model_path = './modelo_mobilenetv2_entrenado.tflite'
+
+interpreter = tfi.Interpreter(model_path=model_path)
+
+interpreter.allocate_tensors()
+
+input_details = interpreter.get_input_details()
+output_details = interpreter.get_output_details()
+
 
 map_categories = {
     "aprovechable" : ['cardboard', 'paper', 'plastic'],
@@ -17,14 +26,30 @@ def predecir_imagen(imagen_path, modelo):
     img = img.astype('float32') / 255.0
     img = np.expand_dims(img, axis=0)  # Expande la dimensión para que sea compatible con el modelo
 
-    prediccion = modelo.predict(img)
-    categoria_idx = np.argmax(prediccion, axis=1)
-    categorias = list(map_categories.keys())
+    modelo.set_tensor(input_details[0]['index'], img)
+
+    modelo.invoke()
+    prediction = interpreter.get_tensor(output_details[0]['index'])
+
+    prediction = np.argmax(prediction)
+
+    prediction = list(map_categories.keys())[prediction]
+
+    return prediction
+
+#prediccion = modelo.predict(img)
+#    categoria_idx = np.argmax(prediccion, axis=1)
+#    categorias = list(map_categories.keys())
 
 
-    print(f"Predicción: {categorias[categoria_idx[0]]}")
+    #print(f"Predicción: {categorias[categoria_idx[0]]}")
 
-modelo = load_model(model_path)
+if __name__ == "__main__":
+    import sys
+    if len(sys.argv) != 2:
+        print("Uso: python3 main.py <path_image>")
+        sys.exit(1)
 
-
-print(predecir_imagen('./OIP.jpg', modelo))
+    img_path = sys.argv[1]
+    categoria = predecir_imagen(img_path, interpreter)
+    print(categoria)
