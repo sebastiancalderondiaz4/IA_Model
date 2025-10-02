@@ -8,7 +8,7 @@ model_path = './modelo_mobilenetv2_entrenado.keras'
 map_categories = {
     "aprovechable" : ['cardboard', 'paper', 'plastic'],
     "inorganica" : ['trash', 'white-glass'],
-    "organicos" : ['biological']
+    "organicos" : ['biological','biological2','biological3']
 }
 
 def predecir_imagen(imagen_path, modelo):
