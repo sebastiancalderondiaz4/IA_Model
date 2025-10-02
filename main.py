@@ -16,8 +16,9 @@ output_details = interpreter.get_output_details()
 
 map_categories = {
     "APROVECHABLES" : ['cardboard', 'paper', 'plastic'],
-    "NO_APROVECHABLE" : ['trash', 'white-glass'],
-    "ORGANICOS" : ['biological']
+    "NO_APROVECHABLE" : ['trash', 'white-glass','trash2' ],
+    "ORGANICOS" : ['biological','biological2','biological3' ]
+
 }
 
 def predecir_imagen(imagen_path, modelo):
@@ -36,6 +37,23 @@ def predecir_imagen(imagen_path, modelo):
     prediction = list(map_categories.keys())[prediction]
 
     return prediction
+
+def predict_img_bytes(imagen_bytes, modelo):
+#    img = cv2.imread(imagen_path) # <- Al integrar la camara me da directamente el objeto img, no necesito leer de un fichero
+#    img = cv2.resize(img, (224, 224))
+#    img = img.astype('float32') / 255.0
+#    img = np.expand_dims(img, axis=0)  # Expande la dimensión para que sea compatible con el modelo
+    modelo.set_tensor(input_details[0]['index'], imagen_bytes)
+
+    modelo.invoke()
+    prediction = interpreter.get_tensor(output_details[0]['index'])
+
+    prediction = np.argmax(prediction)
+
+    prediction = list(map_categories.keys())[prediction]
+
+    return prediction
+
 
 #prediccion = modelo.predict(img)
 #    categoria_idx = np.argmax(prediccion, axis=1)
